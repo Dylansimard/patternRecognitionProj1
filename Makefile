@@ -6,13 +6,6 @@ OBJECTS := $(patsubst %.cpp,%.o,$(SRCS))
 CXX = g++
 CXX_FLAGS = -Wall -std=c++11
 
-.PHONY: default all clean
-
-all: $(TARGET)
-
-#Rules to recompile template headers when they change
-
-
 %.o: %.cpp $(HEADERS)
 	$(CXX) $(CXX_FLAGS) -c $< -o $@
 
