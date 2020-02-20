@@ -5,7 +5,7 @@
 #include <math.h>
 using namespace std;
 
-double ranf(double m);
+
 float generateSamples(int mu, int sigma);
 void printToFile(vector<float> &valX, vector<float> &valY, string outputfile);
 void bayesClassifier(vector<float> &valX, vector<float> &valY, float muOne, float muTwo, float varianceOne, float varianceTwo);
