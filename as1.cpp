@@ -91,6 +91,8 @@ float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vect
 
 	float result = pow(denominator, exponent);
 
+	return result;
+
 }
 
 
