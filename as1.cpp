@@ -12,8 +12,9 @@ float generateSamples(int mu, int sigma);
 void printToFile(vector<float> &valX, vector<float> &valY, string outputfile);
 bool bayesClassifier(vector<float> &valX, vector<float> &valY, float muOne, float muTwo, float varianceOne, float varianceTwo);
 
-float gaussianDescriminant(float valX, float valY, vector<float> mu, float muTwo, vector<vector<float>> sigma);
+float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float calculateDenominator(vector<vector<float>> sigma);
+
 float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 
 int main()
@@ -36,7 +37,30 @@ int main()
 
 	vector<float> muTwo = {4.0, 4.0};
 	vector<vector<float>> sigmaTwo = {{1.0, 0.0}, {0.0, 1.0}};
-	
+
+	vector<pair<int, int>> truePositives;
+	vector<pair<int, int>> falseNegatives;
+
+
+	for(int i = 0; i < 50000; ++i){
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
+		class1 *= .5;
+
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
+		class2 *= .5;
+
+		pair<int, int> temp = make_pair(x1[i], x2[i]);
+
+		if(class1 >= class2){
+			truePositives.push_back(temp);
+		}
+		else{
+			falseNegatives.push_back(temp);
+		}
+	}
+
+	cout << "True positives: " << truePositives.size() << endl;
+	cout << "False negatives: " << falseNegatives.size() << endl;
 }
 
 
