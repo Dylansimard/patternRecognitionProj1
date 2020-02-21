@@ -7,17 +7,12 @@
 #include "boxmuller.cpp"
 using namespace std;
 
-
-float generateSamples(int mu, int sigma);
 void printToFile(vector<float> &valX, vector<float> &valY, string outputfile);
-
 float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float calculateDenominator(vector<vector<float>> sigma);
-
 float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2);
 float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vector<float>> sigma2);
-
 
 
 int main()
@@ -31,9 +26,6 @@ int main()
 		y2.push_back(generateSamples(4, 1));
         
 	}
-    //printToFile(x1, y1, "Sample1.txt");
-	//printToFile(x2, y2, "Sample2.txt");
-
 	
 	vector<float> muOne = {1.0, 1.0};
 	vector<vector<float>> sigmaOne = {{1.0, 0.0}, {0.0 , 1.0}};
@@ -65,8 +57,8 @@ int main()
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
-	float bat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
-	cout << bat << endl;
+	float bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	cout <<  "BhattacharyyaBound: " << bhat << endl;
 }
 
 
