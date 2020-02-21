@@ -10,12 +10,15 @@ using namespace std;
 
 float generateSamples(int mu, int sigma);
 void printToFile(vector<float> &valX, vector<float> &valY, string outputfile);
-bool bayesClassifier(vector<float> &valX, vector<float> &valY, float muOne, float muTwo, float varianceOne, float varianceTwo);
 
 float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float calculateDenominator(vector<vector<float>> sigma);
 
 float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
+float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2);
+float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vector<float>> sigma2);
+
+
 
 int main()
 {
@@ -61,6 +64,9 @@ int main()
 
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
+
+	float bat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	cout << bat << endl;
 }
 
 
@@ -75,12 +81,6 @@ void printToFile(vector<float> &valX, vector<float> &valY, string outputfile){
     }
 }
 
-
-
-
-bool bayesClassifier(vector<float> &valX, vector<float> &valY, float muOne, float muTwo, float varianceOne, float varianceTwo){
-    
-}
 
 /**
  * Thinking run this function for each input vector x = [x_i, y_i]
@@ -212,5 +212,78 @@ float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<
 	float result = ((leftMiddle[0] * right[0]) + (leftMiddle[1] * right[1]));
 
 	return result;
+
+}
+
+
+
+// Calculate denominator in last portion of Bhattacharyya EQ
+//
+//	1/2 * ln [(1-B)*Sigma1 + B*Sigma2]
+//           ------------------------
+//   ======> Sigma1^(1-B) * Sigma2^(B) <=======
+//				 ^^^          ^^^
+//               det          det
+float calculateBhattacharyyaDenominator(vector<vector<float>> sigmaClass1, vector<vector<float>> sigmaClass2){
+	float B = 0.5;
+	float detClass1 = sigmaClass1[0][0] * sigmaClass1[1][1] - sigmaClass1[0][1] * sigmaClass1[1][0];
+
+	float detClass2 = sigmaClass2[0][0] * sigmaClass2[1][1] - sigmaClass2[0][1] * sigmaClass2[1][0];
+
+	return (pow(detClass1, 0.5) * pow(detClass2, 0.5));
+}
+
+//
+// Calculate Bhattacharyya Bound EQ
+//
+// First: B(1 - B)
+//        --------
+//            2
+//
+// Second: (mu1 - mu2)^t = (mu1[0] - mu2[0])
+//
+// Third: [(1-B) * Sigma1 + (B * Sigma2)]^-1
+//
+// Fourth: (mu1 - mu2)
+//
+// Fifth: 1/2 * ln [(1 - B) * Sigma1 + (B * Sigma2)]
+//                 ---------------------------------
+//                     Sigma1^(1-B) * Simga2^B
+//
+// Combine All Parts: First * Second * Third * Fourth + Fifth
+float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2){
+	float first = (.5 * .5)/2;
+	
+	vector<float> second = {mu1[0] - mu2[0], mu1[1] - mu2[1]};
+
+	float detClass1 = sigma1[0][0] * sigma1[1][1] - sigma1[0][1] * sigma1[1][0];
+	float detClass2 = sigma2[0][0] * sigma2[1][1] - sigma2[0][1] * sigma2[1][0];
+	//cout << detClass1 << " "  << detClass2 << endl;
+	
+	float third = (.5 * detClass1) + (1/(detClass2 * 0.5));
+	float thirdInverse = 1/third;
+	//cout << thirdInverse << endl;
+
+	vector<float> fourth = {mu1[0] - mu2[0], mu1[1] - mu2[0]};
+	//cout << fourth[0] << fourth[1] <<  endl;
+
+	float numerator = (0.5 * detClass1) + (0.5 * detClass2);
+	//cout << numerator << endl;
+	float insideLN = numerator/calculateBhattacharyyaDenominator(sigma1, sigma2);
+	//cout << insideLN << endl;
+	float fifth = 0.5 * log(insideLN);
+	
+	float firstSecond = first * second[0] + first * second[1];
+
+	float secondThird = thirdInverse * firstSecond + thirdInverse * firstSecond;
+
+	float thirdFourth = {secondThird * fourth[0] + secondThird * fourth[1]};
+	
+	float fourthFifth = thirdFourth + fifth;
+
+	float result = exp(fourthFifth);
+	
+	return result;
+
 
 }
