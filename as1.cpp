@@ -263,13 +263,38 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 	//cout << numerator << endl;
 	float insideLN = numerator/calculateBhattacharyyaDenominator(sigma1, sigma2);
 	//cout << insideLN << endl;
-	float fifth = 0.5 * log(insideLN);
-	
-	vector<float> firstSecond = {first * second[0], first * second[1]};
 
+	float fifth = 0.5 * log(insideLN);
+
+	//
+	//	first: float value first = B(1 - B)
+	//     	                       --------
+	//     	                          2
+	//	vector second: Using class1 and class2 respectively mu1 and mu2
+	//		 second = [mu1_x - mu2_x, mu1_y - mu2_y]
+	//
+	//	firstSecond = first * second = [first * (mu1_x - mu2_x), first * (mu1_y - mu2_y)]
+	//
+	vector<float> firstSecond = {first * second[0], first * second[1]};
+	
+	//
+	//	third: [(1-B) * Sigma1 + (B * Sigma2)]^-1
+	//
+	//	secondThird = third * [firstSecond_1, firstSecond_2]
+	//	secondThird = [third * firstSecond_1, third * firstSecond_2]
+	//
+	//
 	vector<float> secondThird = {thirdInverse * firstSecond[0], thirdInverse * firstSecond[1]};
 
+	//
+	//	fourth: (mu1 - mu2) = [mu1_x - mu2_x, mu1_y - mu2_y]
+	//	
+	//	thirdFourth = multiplication between two vectors
+	//	[secondThird_1, secondThird_2] and [fourth_1, fourth_2]
+	//	thirdFourth = (secondThird_1 * fourth_1) + (secondThird_2 * fourth_2)
+	//
 	float thirdFourth = (secondThird[0] * fourth[0]) + (secondThird[1] * fourth[1]);
+
 	
 	float fourthFifth = thirdFourth + fifth;
 
