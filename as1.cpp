@@ -265,11 +265,11 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 	//cout << insideLN << endl;
 	float fifth = 0.5 * log(insideLN);
 	
-	float firstSecond = first * second[0] + first * second[1];
+	vector<float> firstSecond = {first * second[0], first * second[1]};
 
-	float secondThird = thirdInverse * firstSecond + thirdInverse * firstSecond;
+	vector<float> secondThird = {thirdInverse * firstSecond[0], thirdInverse * firstSecond[1]};
 
-	float thirdFourth = {secondThird * fourth[0] + secondThird * fourth[1]};
+	float thirdFourth = (secondThird[0] * fourth[0]) + (secondThird[1] * fourth[1]);
 	
 	float fourthFifth = thirdFourth + fifth;
 
