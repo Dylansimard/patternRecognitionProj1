@@ -117,7 +117,8 @@ int main()
 	sigmaTwo = {{4.0, 0.0}, {0.0, 8.0}};
 
 	
-
+	//Clearing generated data vectors 
+	//Clearing truePositive and falseNegative vectors
 		x1.clear();
 		x2.clear();
 		y1.clear();
@@ -127,7 +128,7 @@ int main()
 		truePositives2.clear();
 		falseNegatives2.clear();
 		
-
+	// Generate new data set for Part 2
 	for (int i = 0; i < 100000; ++i) {
 		x1.push_back(generateSamples(1, 1));
 		y1.push_back(generateSamples(1, 1));
