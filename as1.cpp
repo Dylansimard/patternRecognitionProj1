@@ -19,7 +19,7 @@ int main()
 {
 	vector<float> x1, y1, x2, y2;
 
-	for (int i = 0; i < 50000; ++i) {
+	for (int i = 0; i < 100000; ++i) {
 		x1.push_back(generateSamples(1, 1));
 		y1.push_back(generateSamples(1, 1));
 		x2.push_back(generateSamples(4, 1));
@@ -37,7 +37,7 @@ int main()
 	vector<pair<int, int>> falseNegatives, falseNegatives2;
 
 
-	for(int i = 0; i < 50000; ++i){
+	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .5;
 
@@ -67,7 +67,7 @@ int main()
 
 
 
-		for(int i = 0; i < 50000; ++i){
+		for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .2;
 
@@ -128,7 +128,7 @@ int main()
 		falseNegatives2.clear();
 		
 
-	for (int i = 0; i < 50000; ++i) {
+	for (int i = 0; i < 100000; ++i) {
 		x1.push_back(generateSamples(1, 1));
 		y1.push_back(generateSamples(1, 1));
 		x2.push_back(generateSamples(4, 4));
@@ -136,7 +136,7 @@ int main()
         
 	}
 
-	for(int i = 0; i < 50000; ++i){
+	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .5;
 
@@ -165,7 +165,7 @@ int main()
 
 
 
-	for(int i = 0; i < 50000; ++i){
+	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .2;
 
@@ -199,7 +199,7 @@ int main()
 void printToFile(vector<float> &valX, vector<float> &valY, string outputfile){
     ofstream outfile(outputfile);
         outfile << " X VALUE    Y VALUE" << endl;
-    for(int i = 0; i < 50000; ++i){
+    for(int i = 0; i < 100000; ++i){
         outfile << "(" << valX[i] << ", " << valY[i] << ")" << endl;
     }
 }
