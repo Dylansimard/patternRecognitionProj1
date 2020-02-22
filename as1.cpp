@@ -33,8 +33,8 @@ int main()
 	vector<float> muTwo = {4.0, 4.0};
 	vector<vector<float>> sigmaTwo = {{1.0, 0.0}, {0.0, 1.0}};
 
-	vector<pair<int, int>> truePositives;
-	vector<pair<int, int>> falseNegatives;
+	vector<pair<int, int>> truePositives, truePositives2;
+	vector<pair<int, int>> falseNegatives, falseNegatives2;
 
 
 	for(int i = 0; i < 50000; ++i){
@@ -54,11 +54,142 @@ int main()
 		}
 	}
 
+	cout << "---------------------------" << endl;
+	cout << "Number 1" << endl;
+	cout << "Part A" << endl;
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
 	float bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
-	cout <<  "BhattacharyyaBound: " << bhat << endl;
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+
+	cout << "---------------------------" << endl;
+
+
+
+		for(int i = 0; i < 50000; ++i){
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
+		class1 *= .2;
+
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
+		class2 *= .8;
+
+		pair<int, int> temp = make_pair(x1[i], x2[i]);
+
+		if(class1 >= class2){
+			truePositives2.push_back(temp);
+		}
+		else{
+			falseNegatives2.push_back(temp);
+		}
+	}
+
+
+	cout << "Number 1" << endl;
+	cout << "True positives: " << truePositives2.size() << endl;
+	cout << "False negatives: " << falseNegatives2.size() << endl;
+
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+	
+	cout << "---------------------------" << endl;
+
+/*
+*
+*	START PART TWO FOR as1.cpp
+*
+*	new mu1 = [1, 1]
+*	new mu2 = [4, 4]
+*	new sigma1 = [1, 0
+*				  0, 1]
+*	new sigma2 = [4, 0
+*				  0, 8]
+*
+*	REPEAT ALL STEPS FROM PART 1
+*
+*
+*/
+	
+
+	muOne = {1.0, 1.0};
+	sigmaOne = {{1.0, 0.0}, {0.0 , 1.0}};
+
+	muTwo = {4.0, 4.0};
+	sigmaTwo = {{4.0, 0.0}, {0.0, 8.0}};
+
+	
+
+		x1.clear();
+		x2.clear();
+		y1.clear();
+		y2.clear();
+		truePositives.clear();
+		falseNegatives.clear();
+		truePositives2.clear();
+		falseNegatives2.clear();
+		
+
+	for (int i = 0; i < 50000; ++i) {
+		x1.push_back(generateSamples(1, 1));
+		y1.push_back(generateSamples(1, 1));
+		x2.push_back(generateSamples(4, 4));
+		y2.push_back(generateSamples(4, 8));
+        
+	}
+
+	for(int i = 0; i < 50000; ++i){
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
+		class1 *= .5;
+
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
+		class2 *= .5;
+
+		pair<int, int> temp = make_pair(x1[i], x2[i]);
+
+		if(class1 >= class2){
+			truePositives.push_back(temp);
+		}
+		else{
+			falseNegatives.push_back(temp);
+		}
+	}
+	
+	cout << "Number 2" << endl;
+	cout << "Part A" << endl;
+	cout << "True positives: " << truePositives.size() << endl;
+	cout << "False negatives: " << falseNegatives.size() << endl;
+
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+
+	cout << "---------------------------" << endl;
+
+
+
+	for(int i = 0; i < 50000; ++i){
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
+		class1 *= .2;
+
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
+		class2 *= .8;
+
+		pair<int, int> temp = make_pair(x1[i], x2[i]);
+
+		if(class1 >= class2){
+			truePositives2.push_back(temp);
+		}
+		else{
+			falseNegatives2.push_back(temp);
+		}
+	}
+
+	cout << "Number 2" << endl;
+	cout << "Part B" << endl;
+	cout << "True positives: " << truePositives2.size() << endl;
+	cout << "False negatives: " << falseNegatives2.size() << endl;
+
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+	
+	cout << "---------------------------" << endl;
 }
 
 
@@ -227,7 +358,7 @@ float calculateBhattacharyyaDenominator(vector<vector<float>> sigmaClass1, vecto
 
 //
 // Calculate Bhattacharyya Bound EQ
-//
+// Value for B = 0.5
 // First: B(1 - B)
 //        --------
 //            2
