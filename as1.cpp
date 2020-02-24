@@ -7,7 +7,7 @@
 #include "boxmuller.cpp"
 using namespace std;
 
-void printToFile(vector<pair<int, int>> &truePositives, vector<pair<int, int>> &falseNegatives, string outputfile);
+void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, float>> &falseNegatives, string outputfile);
 
 float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float calculateDenominator(vector<vector<float>> sigma);
@@ -37,8 +37,8 @@ int main()
 	vector<float> muTwo = {4.0, 4.0};
 	vector<vector<float>> sigmaTwo = {{1.0, 0.0}, {0.0, 1.0}};
 
-	vector<pair<int, int>> truePositives, truePositives2;
-	vector<pair<int, int>> falseNegatives, falseNegatives2;
+	vector<pair<float, float>> truePositives, truePositives2;
+	vector<pair<float, float>> falseNegatives, falseNegatives2;
 
 
 	// for part a -- class 1
@@ -49,7 +49,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x1[i], y1[i]);
+		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives.push_back(temp);
@@ -58,6 +58,7 @@ int main()
 			falseNegatives.push_back(temp);
 		}
 	}
+
 	string fileName = "num1class1PartA.csv";
 	printToFile(truePositives, falseNegatives, fileName);
 
@@ -84,7 +85,7 @@ int main()
 		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x2[i], y2[i]);
+		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
 		if(class1 <= class2){
 			truePositives.push_back(temp);
@@ -118,7 +119,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x1[i], y1[i]);
+		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives2.push_back(temp);
@@ -153,7 +154,7 @@ int main()
 		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x1[i], y2[i]);
+		pair<float, float> temp = make_pair(x1[i], y2[i]);
 
 		if(class1 <= class2){
 			truePositives2.push_back(temp);
@@ -227,7 +228,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x1[i], y1[i]);
+		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives.push_back(temp);
@@ -262,7 +263,7 @@ int main()
 		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x2[i], y2[i]);
+		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
 		if(class1 <= class2){
 			truePositives.push_back(temp);
@@ -295,7 +296,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x1[i], y1[i]);
+		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives2.push_back(temp);
@@ -328,7 +329,7 @@ int main()
 		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x2[i], y2[i]);
+		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
 		if(class1 <= class2){
 			truePositives2.push_back(temp);
@@ -364,7 +365,7 @@ int main()
  **/
 
 
-void printToFile(vector<pair<int, int>> &truePositives, vector<pair<int, int>> &falseNegatives, string outputfile){
+void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, float>> &falseNegatives, string outputfile){
     ofstream outfile(outputfile);
     outfile << "TP X VALUE, TP Y VALUE, FN X VALUE, FN Y VALUE\n" << endl;
 
