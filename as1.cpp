@@ -7,7 +7,8 @@
 #include "boxmuller.cpp"
 using namespace std;
 
-void printToFile(vector<float> &valX, vector<float> &valY, string outputfile);
+void printToFile(vector<pair<int, int>> &truePositives, vector<pair<int, int>> &falseNegatives, string outputfile);
+
 float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
 float calculateDenominator(vector<vector<float>> sigma);
 float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
@@ -17,6 +18,9 @@ float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vec
 
 int main()
 {
+
+
+
 	vector<float> x1, y1, x2, y2;
 
 	for (int i = 0; i < 100000; ++i) {
@@ -37,6 +41,7 @@ int main()
 	vector<pair<int, int>> falseNegatives, falseNegatives2;
 
 
+	// for part a -- class 1
 	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .5;
@@ -44,7 +49,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x1[i], x2[i]);
+		pair<int, int> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives.push_back(temp);
@@ -53,9 +58,11 @@ int main()
 			falseNegatives.push_back(temp);
 		}
 	}
+	string fileName = "num1class1PartA.csv";
+	printToFile(truePositives, falseNegatives, fileName);
 
 	cout << "---------------------------" << endl;
-	cout << "Number 1" << endl;
+	cout << "Number 1 Class 1" << endl;
 	cout << "Part A" << endl;
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
@@ -65,16 +72,53 @@ int main()
 
 	cout << "---------------------------" << endl;
 
+	truePositives.clear();
+	falseNegatives.clear();
 
 
-		for(int i = 0; i < 100000; ++i){
+	// for part a -- class 2
+	for(int i = 0; i < 100000; ++i){
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
+		class1 *= .5;
+
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
+		class2 *= .5;
+
+		pair<int, int> temp = make_pair(x2[i], y2[i]);
+
+		if(class1 <= class2){
+			truePositives.push_back(temp);
+		}
+		else{
+			falseNegatives.push_back(temp);
+		}
+	}
+
+	fileName = "num1class2PartA.csv";
+	printToFile(truePositives, falseNegatives, fileName);
+
+	cout << "---------------------------" << endl;
+	cout << "Number 1 Class 2" << endl;
+	cout << "Part A" << endl;
+	cout << "True positives: " << truePositives.size() << endl;
+	cout << "False negatives: " << falseNegatives.size() << endl;
+
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+
+	cout << "---------------------------" << endl;
+
+
+
+	// for part b -- class 1	
+	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .2;
 
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x1[i], x2[i]);
+		pair<int, int> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives2.push_back(temp);
@@ -84,8 +128,46 @@ int main()
 		}
 	}
 
+	fileName = "num1class1PartB.csv";
+	printToFile(truePositives2, falseNegatives2, fileName);	
 
-	cout << "Number 1" << endl;
+	cout << "Number 1 Class 1" << endl;
+	cout << "Part B" << endl;
+	cout << "True positives: " << truePositives2.size() << endl;
+	cout << "False negatives: " << falseNegatives2.size() << endl;
+
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+	
+	cout << "---------------------------" << endl;
+
+
+
+	truePositives2.clear();
+	falseNegatives2.clear();
+
+	// for part b -- class 2	
+	for(int i = 0; i < 100000; ++i){
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
+		class1 *= .2;
+
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
+		class2 *= .8;
+
+		pair<int, int> temp = make_pair(x1[i], y2[i]);
+
+		if(class1 <= class2){
+			truePositives2.push_back(temp);
+		}
+		else{
+			falseNegatives2.push_back(temp);
+		}
+	}
+
+	fileName = "num1class2PartB.csv";
+	printToFile(truePositives2, falseNegatives2, fileName);	
+
+	cout << "Number 1 Class 2" << endl;
+	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
 
@@ -137,6 +219,7 @@ int main()
         
 	}
 
+	// for number 2 part a class 1
 	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .5;
@@ -144,7 +227,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .5;
 
-		pair<int, int> temp = make_pair(x1[i], x2[i]);
+		pair<int, int> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives.push_back(temp);
@@ -154,7 +237,7 @@ int main()
 		}
 	}
 	
-	cout << "Number 2" << endl;
+	cout << "Number 2 Class 1" << endl;
 	cout << "Part A" << endl;
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
@@ -164,8 +247,47 @@ int main()
 
 	cout << "---------------------------" << endl;
 
+	fileName = "num2class1PartA.csv";
+	printToFile(truePositives, falseNegatives, fileName);	
+
+	truePositives.clear();
+	falseNegatives.clear();
 
 
+	// for number 2 part a class 2
+	for(int i = 0; i < 100000; ++i){
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
+		class1 *= .5;
+
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
+		class2 *= .5;
+
+		pair<int, int> temp = make_pair(x2[i], y2[i]);
+
+		if(class1 <= class2){
+			truePositives.push_back(temp);
+		}
+		else{
+			falseNegatives.push_back(temp);
+		}
+	}
+	
+	cout << "Number 2 Class 2" << endl;
+	cout << "Part A" << endl;
+	cout << "True positives: " << truePositives.size() << endl;
+	cout << "False negatives: " << falseNegatives.size() << endl;
+
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+
+	cout << "---------------------------" << endl;
+
+	fileName = "num2class2PartA.csv";
+	printToFile(truePositives, falseNegatives, fileName);	
+
+
+
+	// for number 2 part b class 1
 	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
 		class1 *= .2;
@@ -173,7 +295,7 @@ int main()
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
 		class2 *= .8;
 
-		pair<int, int> temp = make_pair(x1[i], x2[i]);
+		pair<int, int> temp = make_pair(x1[i], y1[i]);
 
 		if(class1 >= class2){
 			truePositives2.push_back(temp);
@@ -183,7 +305,7 @@ int main()
 		}
 	}
 
-	cout << "Number 2" << endl;
+	cout << "Number 2 Class 1" << endl;
 	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
@@ -191,18 +313,72 @@ int main()
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 	
 	cout << "---------------------------" << endl;
+
+	fileName = "num2class1PartB.csv";
+	printToFile(truePositives2, falseNegatives2, fileName);
+
+	truePositives2.clear();
+	falseNegatives2.clear();
+
+	// for number 2 part b class 2
+	for(int i = 0; i < 100000; ++i){
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
+		class1 *= .2;
+
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
+		class2 *= .8;
+
+		pair<int, int> temp = make_pair(x2[i], y2[i]);
+
+		if(class1 <= class2){
+			truePositives2.push_back(temp);
+		}
+		else{
+			falseNegatives2.push_back(temp);
+		}
+	}
+
+	cout << "Number 2 Class 2" << endl;
+	cout << "Part B" << endl;
+	cout << "True positives: " << truePositives2.size() << endl;
+	cout << "False negatives: " << falseNegatives2.size() << endl;
+
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+	
+	cout << "---------------------------" << endl;
+
+	fileName = "num2class2PartB.csv";
+	printToFile(truePositives2, falseNegatives2, fileName);
 }
 
 
+/**
+ * 	
+ * 	output to csv file
+ * 	, delimits rows, \n signifies a new line
+ * 	truePositives are always bigger, so loops through that entire vector
+ * 	only writes false negatives for how many there are, then only writes the truepositives.
+ * 	will have to do multiple times -- once for each class -- I think 4 total
+ * 
+ * 
+ **/
 
 
-
-void printToFile(vector<float> &valX, vector<float> &valY, string outputfile){
+void printToFile(vector<pair<int, int>> &truePositives, vector<pair<int, int>> &falseNegatives, string outputfile){
     ofstream outfile(outputfile);
-        outfile << " X VALUE    Y VALUE" << endl;
-    for(int i = 0; i < 100000; ++i){
-        outfile << "(" << valX[i] << ", " << valY[i] << ")" << endl;
-    }
+    outfile << "TP X VALUE, TP Y VALUE, FN X VALUE, FN Y VALUE\n" << endl;
+
+	for(int i = 0; i < truePositives.size(); ++i){
+
+		if(i <= falseNegatives.size()){
+			outfile << truePositives[i].first << "," << truePositives[i].second << "," << falseNegatives[i].first << "," << falseNegatives[i].second << "\n";
+		}
+		else{
+			outfile << truePositives[i].first << "," << truePositives[i].second << "\n";
+		}
+
+	}
+    
 }
 
 
