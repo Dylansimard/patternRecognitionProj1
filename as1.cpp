@@ -10,7 +10,7 @@ using namespace std;
 void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, float>> &falseNegatives, string outputfile);
 
 float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, float probability);
-float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability);
+float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability);
 
 float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<float> mu2, float sigma, float probability1, float probability2);
 
@@ -47,24 +47,39 @@ int main()
 
 
 	// for part a -- class 1
+	vector<pair<float, float>> decisionBoundx, decisionBoundy;
+
 	for(int i = 0; i < 100000; ++i){
 		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, 1, .5);
 
 		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, 1, .5);
 
+		//decisionBoundx.push_back(calculateDecisionBound(x1[i], y1[i], muOne, muTwo, 1, .5, .5));
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
-		if(class1 >= class2){
+		if(class1 == class2){
+			cout << "success?" << endl;
+			decisionBoundx.push_back(temp);
+		}
+		else if(class1 > class2){
 			truePositives.push_back(temp);
 		}
 		else{
 			falseNegatives.push_back(temp);
 		}
+
+
+
+
+		
+
 	}
 
 	string fileName = "num1class1PartA.csv";
-	printToFile(truePositives, falseNegatives, fileName);
+	//printToFile(truePositives, falseNegatives, fileName);
+
+	
 
 	cout << "---------------------------" << endl;
 	cout << "Number 1 Class 1" << endl;
@@ -86,6 +101,8 @@ int main()
 		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, 1, .5);
 
 		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, 1, .5);
+
+		//decisionBoundy.push_back(calculateDecisionBound(x2[i], y2[i], muOne, muTwo, 1, .5, .5));
 
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
@@ -112,7 +129,46 @@ int main()
 
 	cout << "---------------------------" << endl;
 
+	ofstream outFile("test.csv");
 
+	for(int i = 0; i < 100000; ++i){
+		if(i < truePositives.size()){
+			outFile << truePositives[i].first << "," << truePositives[i].second << ",";
+		}
+		else{
+			outFile << "," << ",";
+		}
+
+		if(i < falseNegatives.size()){
+			outFile << falseNegatives[i].first << "," << falseNegatives[i].second << ",";
+		}
+		else{
+			outFile << "," << ",";
+		}
+
+		if(i < truePositives2.size()){
+			outFile << truePositives2[i].first << "," << truePositives2[i].second << ",";
+		}
+		else{
+			outFile << "," << ",";
+		}
+
+		if(i < falseNegatives2.size()){
+			outFile << falseNegatives2[i].first << "," << falseNegatives2[i].second << "," ;
+		}
+		else{
+			outFile << "," << ",";
+		}
+		
+		//outFile << decisionBoundx[i] << "," << decisionBoundy[i] << "\n";
+
+	}
+
+	ofstream outFile2("test2.csv");
+	for(int i = 0; i < 100000; ++i){
+		//outFile2 << x1[i] << "," << y1[i] << "," << x2[i] << "," << y2[i] << "," << decisionBoundx[i] << "\n";
+
+	}
 
 	// for part b -- class 1	
 	for(int i = 0; i < 100000; ++i){
@@ -137,7 +193,7 @@ int main()
 	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
-
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 	
 	cout << "---------------------------" << endl;
@@ -170,7 +226,7 @@ int main()
 	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
-
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 	
 	cout << "---------------------------" << endl;
@@ -221,9 +277,13 @@ int main()
 
 	// for number 2 part a class 1
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant2(x1[i], y1[i], muOne, sigmaOne, .5);
+		//cout << "class1" << endl;
+		float class1 = gaussianDescriminant3(x1[i], y1[i], muOne, sigmaOne, .5);
+		//cout << "total = " << class1 << endl;
 
-		float class2 = gaussianDescriminant2(x1[i], y1[i], muTwo, sigmaTwo, .5);
+		//cout << "class2" << endl;
+		float class2 = gaussianDescriminant3(x1[i], y1[i], muTwo, sigmaTwo, .5);
+		//cout << "total = " << class2 << endl;
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -254,9 +314,9 @@ int main()
 
 	// for number 2 part a class 2
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant2(x2[i], y2[i], muOne, sigmaOne, .5);
+		float class1 = gaussianDescriminant3(x2[i], y2[i], muOne, sigmaOne, .5);
 
-		float class2 = gaussianDescriminant2(x2[i], y2[i], muTwo, sigmaTwo, .5);
+		float class2 = gaussianDescriminant3(x2[i], y2[i], muTwo, sigmaTwo, .5);
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
 		if(class1 <= class2){
@@ -283,9 +343,9 @@ int main()
 
 	// for number 2 part b class 1
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant2(x1[i], y1[i], muOne, sigmaOne, .2);
+		float class1 = gaussianDescriminant3(x1[i], y1[i], muOne, sigmaOne, .2);
 
-		float class2 = gaussianDescriminant2(x1[i], y1[i], muTwo, sigmaTwo, .8);
+		float class2 = gaussianDescriminant3(x1[i], y1[i], muTwo, sigmaTwo, .8);
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -301,7 +361,7 @@ int main()
 	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
-
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 	
 	cout << "---------------------------" << endl;
@@ -314,9 +374,9 @@ int main()
 
 	// for number 2 part b class 2
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant2(x2[i], y2[i], muOne, sigmaOne, .2);
+		float class1 = gaussianDescriminant3(x2[i], y2[i], muOne, sigmaOne, .2);
 
-		float class2 = gaussianDescriminant2(x2[i], y2[i], muTwo, sigmaTwo, .8);
+		float class2 = gaussianDescriminant3(x2[i], y2[i], muTwo, sigmaTwo, .8);
 
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
@@ -334,7 +394,7 @@ int main()
 	cout << "Part B" << endl;
 	cout << "True positives: " << truePositives2.size() << endl;
 	cout << "False negatives: " << falseNegatives2.size() << endl;
-
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 	
 	cout << "---------------------------" << endl;
@@ -391,9 +451,7 @@ float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, 
 	temp.push_back(abs(valX - mu[0]));
 	temp.push_back(abs(valY - mu[1]));
 
-	
-
-	float top = temp[0] * temp[1];
+	float top = (temp[0] * temp[0]) + (temp[1] * temp[1]);
 
 
 
@@ -411,40 +469,75 @@ float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, 
 
 }
 
-/**
- * 			((sigma^-1) * mu)^t * x  
- * 					left side
+/**				left			 middle			right
+ * 	g_i(x) = (x^t * W_i * x) + (w_i^t * x) + w_i0
  * 
+ * 	W_i = -.5 * sigma_i ^ -1
  * 
- * 			(-.5 * (mu^t) * sigma^-1 * (mu) + ln(P(wi))
+ * 	w_i^t = (sigma_i ^ -1) * mu_i
  * 
+ * 	w_i0 = (-.5 * (mu_i ^ t) * (sigma_i ^ -1) * mu_i) - (-.5 * ln|sigma_i|) + ln(P(w_i))
+ * 															
  * 
  * */
-float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability){
+float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability){
+
 
 	float determinant = (sigma[0][0] * sigma[1][1]) - (sigma[0][1] * sigma[1][0]);
 
-	
+	determinant = 1/determinant;
 
-	vector<float> detMu;
-	detMu.push_back(determinant * mu[0]);
-	detMu.push_back(determinant * mu[1]);
+	// w_i --> -.5 * (sigma_i ^ -1)
+	vector<vector<float>> inverseSigma{
+		{(float)-.5 * sigma[1][1] * determinant, (float)-.5 * -sigma[0][1] * determinant},
+		{(float)-.5 * -sigma[1][0] * determinant, (float)-.5 * sigma[0][0] * determinant}
+	};
 
-	float leftSide = (detMu[0] * valX) + (detMu[1] * valY);
+	// x ^ t * w_i
+	vector<float> next;
+	next.push_back((valX * inverseSigma[0][0]) + (valY * inverseSigma[1][0]));
+	next.push_back((valX * inverseSigma[1][0]) + (valY * inverseSigma[1][1]));
 
-	vector<float> rightMu;
-	rightMu.push_back(-.5 * mu[0]);
-	rightMu.push_back(-.5 * mu[1]);
-	
-	rightMu[0] *= determinant;
-	rightMu[1] *= determinant;
+	// above * x
+	// should finish left side
+	float left = ((next[0] * valX) + (next[1] * valY));
 
-	float rightSide = (rightMu[0] * mu[0]) + (rightMu[1] * mu[1]);
+	//cout << left << endl;
 
-	rightSide += log(probability);
+	// (w_i^t * x)
+	//	w_i^t = (sigma_i ^ -1) * mu_i
 
-	return leftSide + rightSide;
+	vector<float> next1;
+	next1.push_back((inverseSigma[0][0] * mu[0]) + (inverseSigma[0][1] * mu[1]));
+	next1.push_back((inverseSigma[1][0] * mu[0]) + (inverseSigma[1][1] * mu[1]));
 
+	float middle = (next1[0] * valX) + (next1[1] * valY);
+
+	//cout << middle << endl;
+
+	//							two
+	// w_i0 left	one
+	// w_i0 = (-.5 * (mu_i ^ t) * (sigma_i ^ -1) * mu_i) - (-.5 * ln|sigma_i|) + ln(P(w_i))
+	//			----------------three------------------
+	vector<float> one;
+	one.push_back(-.5 * mu[0]);
+	one.push_back(-.5 * mu[1]);
+
+	vector<float> two;
+	two.push_back((one[0] * inverseSigma[0][0]) + (one[1] * inverseSigma[1][0]));
+	two.push_back((one[0] * inverseSigma[1][0]) + (one[1] * inverseSigma[1][1]));
+
+	float three = (two[0] * mu[0]) + (two[1] * mu[1]);
+
+	float lnSigma = 1/determinant;
+	lnSigma = log(lnSigma);
+	lnSigma *= -.5;
+
+	lnSigma += log(probability);
+
+	three -= lnSigma;
+
+	return lnSigma + middle + left;
 
 }
 
@@ -489,7 +582,7 @@ float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<f
 	temp.push_back(abs(mu1[0] - mu2[0]));
 	temp.push_back(abs(mu1[1] - mu2[1]));
 
-	float next = temp[0] * temp[1];
+	float next = (temp[0] * temp[0]) + (temp[1] * temp[1]);
 
 	second = second / next;
 
