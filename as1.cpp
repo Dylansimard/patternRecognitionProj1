@@ -679,7 +679,7 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 	
 	float fourthFifth = thirdFourth + fifth;
 
-	float result = exp(-fourthFifth);
+	float result = exp(-fourthFifth) * .5;
 
 	return result;
 
