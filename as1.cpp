@@ -535,9 +535,7 @@ float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vec
 
 	lnSigma += log(probability);
 
-	three += lnSigma;
-
-	
+	three -= lnSigma;
 
 	return lnSigma + middle + left;
 
