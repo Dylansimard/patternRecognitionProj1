@@ -14,7 +14,7 @@ float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vec
 
 float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<float> mu2, float sigma, float probability1, float probability2);
 
-float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2);
+float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2, float beta);
 float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vector<float>> sigma2);
 
 
@@ -37,7 +37,7 @@ int main()
 	}
 	
 	vector<float> muOne = {1.0, 1.0};
-	vector<vector<float>> sigmaOne = {{1.0, 0.0}, {0.0 , 1.0}};
+	vector<vector<float>> sigmaOne = {{1.0, 0}, {0 , 1.0}};
 
 	vector<float> muTwo = {4.0, 4.0};
 	vector<vector<float>> sigmaTwo = {{1.0, 0.0}, {0.0, 1.0}};
@@ -72,7 +72,7 @@ int main()
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
-	float bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	float bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 
 	
@@ -97,7 +97,7 @@ int main()
 		}
 	}
 
-	cout << "test" << endl <<  calculateDecisionBound(x1[0], y1[0], muOne, muTwo, 1, .5, .5) << endl;
+	//cout << "test" << endl <<  calculateDecisionBound(x1[0], y1[0], muOne, muTwo, 1, .5, .5) << endl;
 
 	fileName = "num1class2PartA.csv";
 	printToFile(truePositives, falseNegatives, fileName);
@@ -108,7 +108,6 @@ int main()
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
-	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 
 	cout << "---------------------------" << endl;
@@ -241,7 +240,7 @@ int main()
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
-	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 
 	cout << "---------------------------" << endl;
@@ -273,7 +272,6 @@ int main()
 	cout << "True positives: " << truePositives.size() << endl;
 	cout << "False negatives: " << falseNegatives.size() << endl;
 
-	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 
 	cout << "---------------------------" << endl;
@@ -530,22 +528,6 @@ float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<f
 }
 
 
-// Calculate denominator in last portion of Bhattacharyya EQ
-//
-//	1/2 * ln [(1-B)*Sigma1 + B*Sigma2]
-//           ------------------------
-//   ======> Sigma1^(1-B) * Sigma2^(B) <=======
-//				 ^^^          ^^^
-//               det          det
-float calculateBhattacharyyaDenominator(vector<vector<float>> sigmaClass1, vector<vector<float>> sigmaClass2){
-	float B = 0.5;
-	float detClass1 = sigmaClass1[0][0] * sigmaClass1[1][1] - sigmaClass1[0][1] * sigmaClass1[1][0];
-
-	float detClass2 = sigmaClass2[0][0] * sigmaClass2[1][1] - sigmaClass2[0][1] * sigmaClass2[1][0];
-
-	return (pow(detClass1, 0.5) * pow(detClass2, 0.5));
-}
-
 //
 // Calculate Bhattacharyya Bound EQ
 // Value for B = 0.5
@@ -564,28 +546,28 @@ float calculateBhattacharyyaDenominator(vector<vector<float>> sigmaClass1, vecto
 //                     Sigma1^(1-B) * Simga2^B
 //
 // Combine All Parts: First * Second * Third * Fourth + Fifth
-float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2){
-	float first = (.5 * .5)/2;
+float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2, float beta){
+	float first = (beta * (1 - beta))/2;
+	
+	float detClass1 = sigma1[0][0] * sigma1[1][1] - sigma1[0][1] * sigma1[1][0];
+	float detClass2 = sigma2[0][0] * sigma2[1][1] - sigma2[0][1] * sigma2[1][0];
 	
 	vector<float> second = {mu1[0] - mu2[0], mu1[1] - mu2[1]};
 
-	float detClass1 = sigma1[0][0] * sigma1[1][1] - sigma1[0][1] * sigma1[1][0];
-	float detClass2 = sigma2[0][0] * sigma2[1][1] - sigma2[0][1] * sigma2[1][0];
-	//cout << detClass1 << " "  << detClass2 << endl;
 	
-	float third = (.5 * detClass1) + (1/(detClass2 * 0.5));
-	float thirdInverse = 1/third;
-	//cout << thirdInverse << endl;
+	vector<vector<float>> third = {{(sigma1[0][0] + sigma2[0][0]) * (beta), 0}, {0, (sigma1[1][1] + sigma2[1][1]) * (beta)}};
+	float detThird = third[0][0] * third[1][1] - third[0][1] * third[1][0];
+	float inverseDetThird = 1/detThird;
 
-	vector<float> fourth = {mu1[0] - mu2[0], mu1[1] - mu2[0]};
-	//cout << fourth[0] << fourth[1] <<  endl;
+	vector<vector<float>> inverseThird = {{inverseDetThird * third[1][1], 0}, {0, inverseDetThird * third[0][0]}};
 
-	float numerator = (0.5 * detClass1) + (0.5 * detClass2);
-	//cout << numerator << endl;
-	float insideLN = numerator/calculateBhattacharyyaDenominator(sigma1, sigma2);
-	//cout << insideLN << endl;
+	vector<float> fourth = {mu1[0] - mu2[0], mu1[1] - mu2[1]};
 
-	float fifth = 0.5 * log(insideLN);
+	float numerator = detThird;
+
+	float denominator = (pow(detClass1, 1 - beta) * pow(detClass2, beta));
+
+	float fifth = 0.5 * log(numerator / denominator);
 
 	//
 	//	first: float value first = B(1 - B)
@@ -597,30 +579,19 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 	//	firstSecond = first * second = [first * (mu1_x - mu2_x), first * (mu1_y - mu2_y)]
 	//
 	vector<float> firstSecond = {first * second[0], first * second[1]};
-	
-	//
-	//	third: [(1-B) * Sigma1 + (B * Sigma2)]^-1
-	//
-	//	secondThird = third * [firstSecond_1, firstSecond_2]
-	//	secondThird = [third * firstSecond_1, third * firstSecond_2]
-	//
-	//
-	vector<float> secondThird = {thirdInverse * firstSecond[0], thirdInverse * firstSecond[1]};
 
-	//
-	//	fourth: (mu1 - mu2) = [mu1_x - mu2_x, mu1_y - mu2_y]
-	//	
-	//	thirdFourth = multiplication between two vectors
-	//	[secondThird_1, secondThird_2] and [fourth_1, fourth_2]
-	//	thirdFourth = (secondThird_1 * fourth_1) + (secondThird_2 * fourth_2)
-	//
+	vector<float> secondThird = {inverseThird[0][0] * firstSecond[0], inverseThird[1][1] * firstSecond[1]};
+
 	float thirdFourth = (secondThird[0] * fourth[0]) + (secondThird[1] * fourth[1]);
-
+	cout << thirdFourth << endl;
 	
 	float fourthFifth = thirdFourth + fifth;
-	
+	cout << fourthFifth << endl;
+
 	float result = exp(-fourthFifth);
 	
+	cout << "K(B) = " << fourthFifth << endl;
+
 	return result;
 
 
