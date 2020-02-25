@@ -12,6 +12,8 @@ void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, f
 float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, float probability);
 float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability);
 
+float minDistClassifier(float valX, float valY, vector<float> mu);
+
 float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<float> mu2, float sigma, float probability1, float probability2);
 
 float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2, float beta);
@@ -401,6 +403,38 @@ int main()
 
 	fileName = "num2class2PartB.csv";
 	printToFile(truePositives2, falseNegatives2, fileName);
+
+
+	truePositives2.clear();
+	falseNegatives2.clear();
+
+	// for number 3
+	for(int i = 0; i < 100000; ++i){
+		float class1 = minDistClassifier(x2[i], y2[i], muOne);
+
+		float class2 = minDistClassifier(x2[i], y2[i], muTwo);
+
+		pair<float, float> temp = make_pair(x2[i], y2[i]);
+
+		
+
+		if(class1 <= class2){
+			truePositives2.push_back(temp);
+		}
+		else{
+			falseNegatives2.push_back(temp);
+		}
+	}
+
+	cout << "Number 3" << endl;
+	cout << "True positives: " << truePositives2.size() << endl;
+	cout << "False negatives: " << falseNegatives2.size() << endl;
+	bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo, 0.5);
+	cout <<  "Bhattacharyya Bound: " << bhat << endl;
+	
+	cout << "---------------------------" << endl;
+
+
 	
 }
 
@@ -525,6 +559,21 @@ float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vec
 	return left + middle + right;
 
 }
+
+// g_i(x) = - ||x - u_i|| ^ 2
+// ||x - u_i|| ^ 2 = 
+//						(x-u_i)^t * (x-U_i)
+//
+
+float minDistClassifier(float valX, float valY, vector<float> mu){
+
+	vector<float> temp1 {(valX - mu[0]), (valY - mu[1])};
+	vector<float> temp2 = temp1;
+
+	return -((temp1[0] * temp2[0]) + (temp1[1] * temp2[1]));
+
+}
+
 
 /**
  * 	w^t * (x - x_0)
