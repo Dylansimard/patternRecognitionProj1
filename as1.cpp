@@ -9,11 +9,12 @@ using namespace std;
 
 void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, float>> &falseNegatives, string outputfile);
 
-float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
-float calculateDenominator(vector<vector<float>> sigma);
-float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma);
+float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, float probability);
+float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability);
+
 float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2);
 float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vector<float>> sigma2);
+
 
 
 int main()
@@ -43,11 +44,10 @@ int main()
 
 	// for part a -- class 1
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
-		class1 *= .5;
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, 1, .5);
 
-		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
-		class2 *= .5;
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, 1, .5);
+
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -79,11 +79,9 @@ int main()
 
 	// for part a -- class 2
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
-		class1 *= .5;
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, 1, .5);
 
-		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
-		class2 *= .5;
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, 1, .5);
 
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
@@ -113,11 +111,9 @@ int main()
 
 	// for part b -- class 1	
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
-		class1 *= .2;
+		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, 1, .2);
 
-		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
-		class2 *= .8;
+		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, 1, .8);
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -148,11 +144,9 @@ int main()
 
 	// for part b -- class 2	
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
-		class1 *= .2;
+		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, 1, .2);
 
-		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
-		class2 *= .8;
+		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, 1, .8);
 
 		pair<float, float> temp = make_pair(x1[i], y2[i]);
 
@@ -222,11 +216,9 @@ int main()
 
 	// for number 2 part a class 1
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
-		class1 *= .5;
+		float class1 = gaussianDescriminant2(x1[i], y1[i], muOne, sigmaOne, .5);
 
-		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
-		class2 *= .5;
+		float class2 = gaussianDescriminant2(x1[i], y1[i], muTwo, sigmaTwo, .5);
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -257,12 +249,9 @@ int main()
 
 	// for number 2 part a class 2
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
-		class1 *= .5;
+		float class1 = gaussianDescriminant2(x2[i], y2[i], muOne, sigmaOne, .5);
 
-		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
-		class2 *= .5;
-
+		float class2 = gaussianDescriminant2(x2[i], y2[i], muTwo, sigmaTwo, .5);
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
 		if(class1 <= class2){
@@ -290,11 +279,9 @@ int main()
 
 	// for number 2 part b class 1
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x1[i], y1[i], muOne, sigmaOne);
-		class1 *= .2;
+		float class1 = gaussianDescriminant2(x1[i], y1[i], muOne, sigmaOne, .2);
 
-		float class2 = gaussianDescriminant(x1[i], y1[i], muTwo, sigmaTwo);
-		class2 *= .8;
+		float class2 = gaussianDescriminant2(x1[i], y1[i], muTwo, sigmaTwo, .8);
 
 		pair<float, float> temp = make_pair(x1[i], y1[i]);
 
@@ -323,11 +310,9 @@ int main()
 
 	// for number 2 part b class 2
 	for(int i = 0; i < 100000; ++i){
-		float class1 = gaussianDescriminant(x2[i], y2[i], muOne, sigmaOne);
-		class1 *= .2;
+		float class1 = gaussianDescriminant2(x2[i], y2[i], muOne, sigmaOne, .2);
 
-		float class2 = gaussianDescriminant(x2[i], y2[i], muTwo, sigmaTwo);
-		class2 *= .8;
+		float class2 = gaussianDescriminant2(x2[i], y2[i], muTwo, sigmaTwo, .8);
 
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
@@ -350,6 +335,7 @@ int main()
 
 	fileName = "num2class2PartB.csv";
 	printToFile(truePositives2, falseNegatives2, fileName);
+	
 }
 
 
@@ -384,138 +370,76 @@ void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, f
 
 
 /**
- * Thinking run this function for each input vector x = [x_i, y_i]
- * With respective mu vector -- 
+ * gi(x) = - ((x-mu)^2 / 2 * (little Sigma)^2) + ln p(wi)
  * 
- * 								[mu_x, mu_y]
+ * 		
  * 
- * and respectove sigma matrix -- 
  * 
- * 								[sigma_x, 0]
- * 								[0, sigma_y]
- * 
- * Thinking splitting the descriminant into 2 parts --
- * 
- * 		The denominator -- 
- * 
- * 								((2 * pi) ^ d/2) * |sigma| ^ (1/2)
- * 
- * 		The exponent --
- * 
- * 								-1/2 * ((x - mu) ^ t) * (sigma ^ -1) * (x - mu)
  * 				
  **/
 
-float gaussianDescriminant(float valX, float valY, vector<float> mu, vector<vector<float>> sigma){
+float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, float probability){
 
-	float denominator = calculateDenominator(sigma);
+	// (x - mu) ^ 2
+	vector<float> temp;
+	temp.push_back(abs(valX - mu[0]));
+	temp.push_back(abs(valY - mu[1]));
 
-	denominator = 1/denominator;
-
-	float exponent = calculateExponent(valX, valY, mu, sigma);
-
-	float result = pow(denominator, exponent);
-
-	return result;
-
-}
-
-
-// Function to calculate: 		  "left"           "right"
-//							((2 * pi) ^ d/2) * |sigma| ^ (1/2)
-//
-//	|sigma| is the determinant of sigma
-//
-// Assuming d = dimensionality, which == 2
-// 
-// returns the denominator value -- not 1/denominator -- still have to do 1/denominator in prev func.
-
-float calculateDenominator(vector<vector<float>> sigma){
 	
-	float left = 2 * M_PI;
 
-	// sigma will always be 2x2 in this assignment
-	float determinant = sigma[0][0] * sigma[1][1] - sigma[0][1] * sigma[1][0];
+	float top = temp[0] * temp[1];
 
-	float right = pow(determinant, .5);
 
-	float result = left * right;
 
-	return result;
+	// 2 * (little sigma) ^ 2
+	float bottom = pow(sigma, 2);
+	bottom *= 2;
+
+	float left = top / bottom;
+
+	left *= -1;
+
+	float probLog = log(probability);
+
+	return left + probLog;
 
 }
 
-// Function to calculate: 				"left"			   "middle"      "right"
-//								-1/2 * ((x - mu) ^ t) * (sigma ^ -1) * (x - mu)
-float calculateExponent(float valX, float valY, vector<float> mu, vector<vector<float>> sigma){
+/**
+ * 			((sigma^-1) * mu)^t * x  
+ * 					left side
+ * 
+ * 
+ * 			(-.5 * (mu^t) * sigma^-1 * (mu) + ln(P(wi))
+ * 
+ * 
+ * */
+float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability){
+
+	float determinant = (sigma[0][0] * sigma[1][1]) - (sigma[0][1] * sigma[1][0]);
+
+	vector<float> detMu;
+	detMu.push_back(determinant * mu[0]);
+	detMu.push_back(determinant * mu[1]);
+
+	float leftSide = (detMu[0] * valX) + (detMu[1] * valY);
+
+
+	vector<float> rightMu;
+	rightMu.push_back(-.5 * mu[0]);
+	rightMu.push_back(-.5 * mu[1]);
 	
-	// (x - mu) -- vector
-	vector<float> left = {valX - mu[0], valY - mu[1]};
+	rightMu[0] *= determinant;
+	rightMu[1] *= determinant;
 
-	// above * 1/2 as a scalar
-	left[0] *= .5;
-	left[1] *=.5;
+	float rightSide = (rightMu[0] * mu[0]) + (rightMu[1] * mu[1]);
 
+	rightSide += log(probability);
 
-	// following for "middle" sigma ^ -1 -- have to inverse matrix
-	// done by the following:
+	return leftSide + rightSide;
 
-	// assume matrix = 
-	//					[a, b]
-	//					[c, d]
-	// the inverse is:
-	//								
-	//				(1 / determinent) * [d, -b]
-	//									[-c, a]
-
-
-	float determinant = sigma[0][0] * sigma[1][1] - sigma[0][1] * sigma[1][0];
-	determinant = 1/determinant;
-	vector<vector<float>> middle = {
-		{(determinant * sigma[1][1]), (determinant * -sigma[0][1])},
-		{(determinant * -sigma[1][0]), (determinant * sigma[0][0])}
-	};
-
-
-	vector<float> right = {(valX - mu[0]), (valY - mu[1])};
-
-	// now left ^ t * middle
-	// the left side is technically [x
-	//								 y]
-	// so it is already transposed as it is stored
-	// makes the equation look like:
-	//		
-	//			 "left"				"middle"
-	//		[left_0, left_1] * [middle_0, middle_2
-	//						    middle_1, middle_3]
-
-	// will result in the following:
-	//
-	//			[leftMiddle_0, leftMiddle_1]
-
-	vector<float> leftMiddle = {
-		(left[0] * middle[0][0] + left[1] * middle[1][0]), (left[0] * middle[0][1] + left[1] * middle[1][1])
-	};
-
-
-	// now left * middle is calculated -- calculate leftmiddle * right --> result
-	// leftMiddle stored as:
-	//
-	//			[leftMiddle_0, leftMiddle_1]
-	//
-	// right is stored as:
-	//
-	//						[right_0
-	//						 right_1]
-	//
-	// so resulting value should be a singular value --> which is the return value
-
-	float result = ((leftMiddle[0] * right[0]) + (leftMiddle[1] * right[1]));
-
-	return result;
 
 }
-
 
 
 // Calculate denominator in last portion of Bhattacharyya EQ
