@@ -71,7 +71,7 @@ int main()
 	float bhat = bhattacharyyaBound(muOne, muTwo, sigmaOne, sigmaTwo);
 	cout <<  "Bhattacharyya Bound: " << bhat << endl;
 
-	cout << "---------------------------" << endl;
+	
 
 	truePositives.clear();
 	falseNegatives.clear();
@@ -530,7 +530,7 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 
 	
 	float fourthFifth = thirdFourth + fifth;
-
+	
 	float result = exp(-fourthFifth);
 	
 	return result;
