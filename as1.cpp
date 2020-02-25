@@ -483,61 +483,46 @@ float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, 
 float gaussianDescriminant3(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability){
 
 
-	float determinant = (sigma[0][0] * sigma[1][1]) - (sigma[0][1] * sigma[1][0]);
+	// calculating first term x^t * W_i * x
+	// W_i = -1/2 * sigma^-1
+	// final value storeed in left
+	float determinant = (sigma[0][0] * sigma[1][1] - sigma[1][0] * sigma[0][1]);
 
-	determinant = 1/determinant;
 
-	// w_i --> -.5 * (sigma_i ^ -1)
 	vector<vector<float>> inverseSigma{
-		{(float)-.5 * sigma[1][1] * determinant, (float)-.5 * -sigma[0][1] * determinant},
-		{(float)-.5 * -sigma[1][0] * determinant, (float)-.5 * sigma[0][0] * determinant}
+		{((1/determinant) * sigma[1][1]), (-1 * (1/determinant) * sigma[1][0])},
+		{(-1 * (1/determinant) * sigma[0][1]), ((1/determinant) * sigma[0][0])}
 	};
 
-	// x ^ t * w_i
-	vector<float> next;
-	next.push_back((valX * inverseSigma[0][0]) + (valY * inverseSigma[1][0]));
-	next.push_back((valX * inverseSigma[1][0]) + (valY * inverseSigma[1][1]));
+	vector<vector<float>> W_i = inverseSigma;
+	W_i[0][0] *= -.5;
+	W_i[0][1] *= -.5;
+	W_i[1][0] *= -.5;
+	W_i[1][1] *= -.5;
 
-	// above * x
-	// should finish left side
-	float left = ((next[0] * valX) + (next[1] * valY));
+	vector<float> temp = {(valX * W_i[0][0]) + (valY * W_i[1][0]), (valX * W_i[0][1]) + (valY * W_i[1][1])};
 
-	//cout << left << endl;
+	float left = temp[0] * valX + temp[1] * valY;
 
-	// (w_i^t * x)
-	//	w_i^t = (sigma_i ^ -1) * mu_i
+	//w_i^t * x
+	//w_i = inverseSigma * mu_i
 
-	vector<float> next1;
-	next1.push_back((inverseSigma[0][0] * mu[0]) + (inverseSigma[0][1] * mu[1]));
-	next1.push_back((inverseSigma[1][0] * mu[0]) + (inverseSigma[1][1] * mu[1]));
+	vector<float> w_i {(inverseSigma[0][0] * mu[0]) + (inverseSigma[1][0] * mu[1]), (inverseSigma[0][1] * mu[0]) + (inverseSigma[1][1] * mu[1])};
 
-	float middle = (next1[0] * valX) + (next1[1] * valY);
+	float middle = w_i[0] * valX + w_i[1] * valY;
 
-	//cout << middle << endl;
+	// calculate w_i0
+	// w_i0 = -.5 * mu^t * inverseSigma * mu - 1/2 ln|sigma| + ln prob
 
-	//							two
-	// w_i0 left	one
-	// w_i0 = (-.5 * (mu_i ^ t) * (sigma_i ^ -1) * mu_i) - (-.5 * ln|sigma_i|) + ln(P(w_i))
-	//			----------------three------------------
-	vector<float> one;
-	one.push_back(-.5 * mu[0]);
-	one.push_back(-.5 * mu[1]);
+	vector<float> next1 {((float)-.5 * mu[0]), ((float)-.5 * mu[1])};
 
-	vector<float> two;
-	two.push_back((one[0] * inverseSigma[0][0]) + (one[1] * inverseSigma[1][0]));
-	two.push_back((one[0] * inverseSigma[1][0]) + (one[1] * inverseSigma[1][1]));
+	vector<float> next2 {(next1[0] * inverseSigma[0][0]) + (next1[1] * inverseSigma[1][0]), (next1[0] * inverseSigma[0][1]) + (next1[0] * inverseSigma[1][1])};
 
-	float three = (two[0] * mu[0]) + (two[1] * mu[1]);
+	float next3 = next2[0] * mu[0] + next2[1] * mu[1];
 
-	float lnSigma = 1/determinant;
-	lnSigma = log(lnSigma);
-	lnSigma *= -.5;
+	float right = next3 - (.5 * log(determinant)) + log(probability);
 
-	lnSigma += log(probability);
-
-	three -= lnSigma;
-
-	return lnSigma + middle + left;
+	return left + middle + right;
 
 }
 
