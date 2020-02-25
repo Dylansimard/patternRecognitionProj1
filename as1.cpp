@@ -12,8 +12,12 @@ void printToFile(vector<pair<float, float>> &truePositives, vector<pair<float, f
 float gaussianDescriminant(float valX, float valY, vector<float> mu, int sigma, float probability);
 float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vector<float>> sigma, float probability);
 
+float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<float> mu2, float sigma, float probability1, float probability2);
+
 float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<float>> sigma1, vector<vector<float>> sigma2);
 float calculateBhattacharyyaDenominator(vector<vector<float>> sigma1, vector<vector<float>> sigma2);
+
+
 
 
 
@@ -92,6 +96,8 @@ int main()
 			falseNegatives.push_back(temp);
 		}
 	}
+
+	cout << "test" << endl <<  calculateDecisionBound(x1[0], y1[0], muOne, muTwo, 1, .5, .5) << endl;
 
 	fileName = "num1class2PartA.csv";
 	printToFile(truePositives, falseNegatives, fileName);
@@ -316,6 +322,8 @@ int main()
 
 		pair<float, float> temp = make_pair(x2[i], y2[i]);
 
+		
+
 		if(class1 <= class2){
 			truePositives2.push_back(temp);
 		}
@@ -418,12 +426,13 @@ float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vec
 
 	float determinant = (sigma[0][0] * sigma[1][1]) - (sigma[0][1] * sigma[1][0]);
 
+	
+
 	vector<float> detMu;
 	detMu.push_back(determinant * mu[0]);
 	detMu.push_back(determinant * mu[1]);
 
 	float leftSide = (detMu[0] * valX) + (detMu[1] * valY);
-
 
 	vector<float> rightMu;
 	rightMu.push_back(-.5 * mu[0]);
@@ -439,6 +448,85 @@ float gaussianDescriminant2(float valX, float valY, vector<float> mu, vector<vec
 	return leftSide + rightSide;
 
 
+}
+
+/**
+ * 	w^t * (x - x_0)
+ * 
+ * 	w = mu_i - mu_j
+ * 
+ * 	x_0 = .5 * (mu_i + mu_j) - ( (sigma^2) / || mu_i - mu_j|| ^ 2) * ln ( P(w_i) / P(w_j) ) * ( mu_i - mu_j )
+ * 			 first						second								third					fourth
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 
+ **/
+
+float calculateDecisionBound(float valX, float valY, vector<float> mu1, vector<float> mu2, float sigma, float probability1, float probability2){
+
+	// w^t
+	vector<float> w;
+	w.push_back(mu1[0] - mu2[0]);
+	w.push_back(mu1[1] - mu2[1]);
+
+
+	// x_0
+
+	vector<float> first;
+	first.push_back(.5 * (mu1[0] + mu2[0]));
+	first.push_back(.5 * (mu1[1] + mu2[1]));
+
+
+
+	float second = sigma * sigma;
+
+
+
+	// (x - mu) ^ 2
+	vector<float> temp;
+	temp.push_back(abs(mu1[0] - mu2[0]));
+	temp.push_back(abs(mu1[1] - mu2[1]));
+
+	float next = temp[0] * temp[1];
+
+	second = second / next;
+
+	
+
+	float third = log(probability1 / probability2);
+
+
+	vector<float> fourth;
+	fourth.push_back(mu1[0] - mu2[0]);
+	fourth.push_back(mu1[1] - mu2[1]);
+
+	// second * third
+	float secondThird = second * third;
+	
+	// times fourth as scalar
+	fourth[0] *= secondThird;
+	fourth[1] *= secondThird;
+
+	//first - the rest
+	first[0] -= fourth[0];
+	first[1] -= fourth[1];
+
+	// (x - x_0)
+	vector<float> right;
+	right.push_back(valX - first[0]);
+	right.push_back(valY - first[1]);
+
+
+	// w * (x - x_0)
+
+	float result = (w[0] * right[0]) + (w[1] * right[1]);
+
+	return result;
+	
 }
 
 
