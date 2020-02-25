@@ -676,14 +676,10 @@ float bhattacharyyaBound(vector<float> mu1, vector<float> mu2, vector<vector<flo
 	vector<float> secondThird = {inverseThird[0][0] * firstSecond[0], inverseThird[1][1] * firstSecond[1]};
 
 	float thirdFourth = (secondThird[0] * fourth[0]) + (secondThird[1] * fourth[1]);
-	cout << thirdFourth << endl;
 	
 	float fourthFifth = thirdFourth + fifth;
-	cout << fourthFifth << endl;
 
 	float result = exp(-fourthFifth);
-	
-	cout << "K(B) = " << fourthFifth << endl;
 
 	return result;
 
